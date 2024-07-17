@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Создание последовательностей -->
+    <changeSet id="1" author="author">
+        <createSequence sequenceName="order_seq" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="product_seq" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="user_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+    <!-- Создание таблиц -->
+    <changeSet id="2" author="author">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="password" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="products">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="price" type="numeric(38,2)"/>
+        </createTable>
+
+        <createTable tableName="orders">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sum" type="numeric(38,2)"/>
+            <column name="user_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="orders_products">
+            <column name="order_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users_orders_list">
+            <column name="orders_list_id" type="bigint">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Добавление внешних ключей -->
+    <changeSet id="3" author="author">
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="user_id" constraintName="FK32ql8ubntj5uh44ph9659tiih" referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders_products" baseColumnNames="product_id" constraintName="FK43vke5jd6eyasd92t3k24kdxq" referencedTableName="products" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders_products" baseColumnNames="order_id" constraintName="FKe4y1sseio787e4o5hrml7omt5" referencedTableName="orders" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="users_orders_list" baseColumnNames="orders_list_id" constraintName="FKg65sgln6cefnlk6ym9e1qdxqd" referencedTableName="orders" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="users_orders_list" baseColumnNames="user_id" constraintName="FK2v167pl9jwr6hctg09uyoyn6i" referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Вставка начальных данных -->
+    <changeSet id="4" author="author">
+        <!-- Вставка пользователей -->
+        <insert tableName="users">
+            <column name="id" valueSequenceNext="user_seq"/>
+            <column name="email" value="user1@example.com"/>
+            <column name="name" value="User One"/>
+            <column name="password" value="password1"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" valueSequenceNext="user_seq"/>
+            <column name="email" value="user2@example.com"/>
+            <column name="name" value="User Two"/>
+            <column name="password" value="password2"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" valueSequenceNext="user_seq"/>
+            <column name="email" value="user3@example.com"/>
+            <column name="name" value="User Three"/>
+            <column name="password" value="password3"/>
+        </insert>
+
+        <!-- Вставка продуктов -->
+        <insert tableName="products">
+            <column name="id" valueSequenceNext="product_seq"/>
+            <column name="name" value="Product A"/>
+            <column name="price" value="10.00"/>
+        </insert>
+        <insert tableName="products">
+            <column name="id" valueSequenceNext="product_seq"/>
+            <column name="name" value="Product B"/>
+            <column name="price" value="20.00"/>
+        </insert>
+        <insert tableName="products">
+            <column name="id" valueSequenceNext="product_seq"/>
+            <column name="name" value="Product C"/>
+            <column name="price" value="30.00"/>
+        </insert>
+        <insert tableName="products">
+            <column name="id" valueSequenceNext="product_seq"/>
+            <column name="name" value="Product D"/>
+            <column name="price" value="40.00"/>
+        </insert>
+        <insert tableName="products">
+            <column name="id" valueSequenceNext="product_seq"/>
+            <column name="name" value="Product E"/>
+            <column name="price" value="50.00"/>
+        </insert>
+
+        <!-- Вставка заказов -->
+        <insert tableName="orders">
+            <column name="id" valueSequenceNext="order_seq"/>
+            <column name="status" value="1"/>
+            <column name="sum" value="30.00"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="orders">
+            <column name="id" valueSequenceNext="order_seq"/>
+            <column name="status" value="2"/>
+            <column name="sum" value="50.00"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="orders">
+            <column name="id" valueSequenceNext="order_seq"/>
+            <column name="status" value="3"/>
+            <column name="sum" value="70.00"/>
+            <column name="user_id" value="3"/>
+        </insert>
+
+        <!-- Вставка связей заказов и продуктов -->
+        <insert tableName="orders_products">
+            <column name="order_id" value="1"/>
+            <column name="product_id" value="1"/>
+        </insert>
+        <insert tableName="orders_products">
+            <column name="order_id" value="1"/>
+            <column name="product_id" value="2"/>
+        </insert>
+        <insert tableName="orders_products">
+            <column name="order_id" value="2"/>
+            <column name="product_id" value="3"/>
+        </insert>
+        <insert tableName="orders_products">
+            <column name="order_id" value="2"/>
+            <column name="product_id" value="4"/>
+        </insert>
+        <insert tableName="orders_products">
+            <column name="order_id" value="3"/>
+            <column name="product_id" value="5"/>
+        </insert>
+        <insert tableName="orders_products">
+            <column name="order_id" value="3"/>
+            <column name="product_id" value="1"/>
+        </insert>
+
+        <!-- Вставка связей пользователей и заказов -->
+        <insert tableName="users_orders_list">
+            <column name="orders_list_id" value="1"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="users_orders_list">
+            <column name="orders_list_id" value="2"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="users_orders_list">
+            <column name="orders_list_id" value="3"/>
+            <column name="user_id" value="3"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
+
+
+
+
